@@ -6,7 +6,7 @@ int drop;
 
 void setup() {
   // candy detector
-  pinMode(photoInturruptSignal, INPUT);
+  pinMode(photoInturruptSignal, INPUT); //low is triggered
   
   // enable debug output
   Serial.begin(9600);
@@ -14,12 +14,10 @@ void setup() {
 
 void loop() {
   drop = digitalRead(photoInturruptSignal);
-  if (drop == LOW)
+
+  if(drop == LOW) // beam inturrupt
   {
-    Serial.println("Low");
-  }
-  if (drop == HIGH)
-  {
-    Serial.println("High");
+    Serial.println("dropped");
+    delay(100);
   }
 }
