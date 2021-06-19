@@ -10,13 +10,52 @@ PCA9536 io;
 int photoInturruptSignal = 3;
 int slotServo = 0;
 int slideServo = 1;
+int curSlotPos = SERVOMIN;
+int curSlidePos = SERVOMIN;
 int val;
 int r, g, b;
+
+void rotateSlot (int target) {
+  rotateMotor(slotServo, curSlotPos, target);
+  curSlotPos = target;
+}
+
+void rotateSlide (int target) {
+  rotateMotor(slideServo, curSlidePos, target);
+  curSlidePos = target;
+}
+
+void rotateMotor (int servo, int starting, int target) {
+  if(target < starting) {
+    servoController.setPWM(servo, 0, target);
+    delay(1000);
+  }
+  else {
+    for (uint16_t pulselen = starting; pulselen < target; pulselen++) {
+      servoController.setPWM(servo, 0, pulselen);
+    }
+    delay(100);  
+  }
+}
+
+void setServoPulse(uint8_t n, double pulse) {
+  double pulselength;
+  
+  pulselength = 1000000;   // 1,000,000 us per second
+  pulselength /= 60;   // 60 Hz
+  Serial.print(pulselength); Serial.println(" us per period"); 
+  pulselength /= 4096;  // 12 bits of resolution
+  Serial.print(pulselength); Serial.println(" us per bit"); 
+  pulse *= 1000;
+  pulse /= pulselength;
+  Serial.println(pulse);
+  servoController.setPWM(n, 0, pulse);
+}
 
 void setup() {
   // enable debug output
   Serial.begin(115200);
-  Serial.println("Setup Initilizing.");
+  Serial.println("====Setup Initilizing====");
   
   // candy detector
   pinMode(photoInturruptSignal, INPUT); //low is triggered
@@ -24,6 +63,9 @@ void setup() {
   // servos
   servoController.begin();
   servoController.setPWMFreq(60);
+  servoController.setPWM(slotServo,0,SERVOMIN);
+  servoController.setPWM(slideServo,0,SERVOMIN);
+  delay(1000);
 
   // color sensor
   if (rgb.begin() != BH1749NUC_SUCCESS)
@@ -57,31 +99,24 @@ void loop() {
   {
     Serial.println("dropped");
     delay(500);
-/*
-    for (uint16_t pulselen = SERVOMIN; pulselen < SERVOMAX; pulselen++) {
-      servoController.setPWM(slotServo, 0, pulselen);
-      servoController.setPWM(slideServo, 0, pulselen);
-    }
 
-    delay(500);
-    for (uint16_t pulselen = SERVOMAX; pulselen > SERVOMIN; pulselen--) {
-      servoController.setPWM(slotServo, 0, pulselen);
-      servoController.setPWM(slideServo, 0, pulselen);
-    }
-    delay(500);
-   */
-
+    rotateSlot(SERVOMAX);
+    rotateSlide(SERVOMAX);
+  
     if (rgb.available())
     {
       io.write(0, LOW);
       delay(500);
       val = 3;
-
+  
       Serial.println("Red: " + String(rgb.readRed()));
       Serial.println("Green: " + String(rgb.readGreen()));
       Serial.println("Blue: " + String(rgb.readBlue()));
       Serial.println();
       io.write(0, HIGH);
     }
+
+    rotateSlot(SERVOMIN);
+    rotateSlide(SERVOMIN);
   }
 }
