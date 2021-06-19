@@ -3,20 +3,61 @@
 #include <SparkFun_PCA9536_Arduino_Library.h>
 
 Adafruit_PWMServoDriver servoController = Adafruit_PWMServoDriver();
-#define SERVOMIN  120
-#define SERVOMAX  720
+#define HOPPER 210
+#define SENSOR 320
+#define DROP 440
 BH1749NUC rgb;
 PCA9536 io; 
 int photoInturruptSignal = 3;
 int slotServo = 0;
 int slideServo = 1;
+int curSlotPos = HOPPER;
+int curSlidePos = SERVOMIN;
+int loadCount = 3;
 int val;
-int r, g, b;
+int R, G, B;
+
+void rotateSlot (int target) {
+  rotateMotor(slotServo, curSlotPos, target);
+  curSlotPos = target;
+}
+
+void rotateSlide (int target) {
+  rotateMotor(slideServo, curSlidePos, target);
+  curSlidePos = target;
+}
+
+void rotateMotor (int servo, int starting, int target) {
+  if(target < starting) {
+    servoController.setPWM(servo, 0, target);
+    delay(1000);
+  }
+  else {
+    for (uint16_t pulselen = starting; pulselen < target; pulselen++) {
+      servoController.setPWM(servo, 0, pulselen);
+    }
+    delay(100);  
+  }
+}
+
+void setServoPulse(uint8_t n, double pulse) {
+  double pulselength;
+  
+  pulselength = 1000000;   // 1,000,000 us per second
+  pulselength /= 60;   // 60 Hz
+  Serial.print(pulselength); Serial.println(" us per period"); 
+  pulselength /= 4096;  // 12 bits of resolution
+  Serial.print(pulselength); Serial.println(" us per bit"); 
+  pulse *= 1000;
+  pulse /= pulselength;
+  Serial.println(pulse);
+  servoController.setPWM(n, 0, pulse);
+}
 
 void setup() {
   // enable debug output
   Serial.begin(115200);
-  Serial.println("Setup Initilizing.");
+  Serial.println("====Setup Initilizing====");
   
   // candy detector
   pinMode(photoInturruptSignal, INPUT); //low is triggered
@@ -24,6 +65,9 @@ void setup() {
   // servos
   servoController.begin();
   servoController.setPWMFreq(60);
+  servoController.setPWM(slotServo,0,SERVOMIN);
+  servoController.setPWM(slideServo,0,SERVOMIN);
+  delay(500);
 
   // color sensor
   if (rgb.begin() != BH1749NUC_SUCCESS)
@@ -50,38 +94,47 @@ void setup() {
   Serial.println("====Candy Sorter Initialized====");
 }
 
-void loop() {
-  val = digitalRead(photoInturruptSignal);
-
-  if(val == LOW) // beam inturrupt
-  {
-    Serial.println("dropped");
-    delay(500);
-/*
-    for (uint16_t pulselen = SERVOMIN; pulselen < SERVOMAX; pulselen++) {
-      servoController.setPWM(slotServo, 0, pulselen);
-      servoController.setPWM(slideServo, 0, pulselen);
-    }
-
-    delay(500);
-    for (uint16_t pulselen = SERVOMAX; pulselen > SERVOMIN; pulselen--) {
-      servoController.setPWM(slotServo, 0, pulselen);
-      servoController.setPWM(slideServo, 0, pulselen);
-    }
-    delay(500);
-   */
-
+void run()
+{
+    rotateSlot(SENSOR);
+    delay(300);
+        
     if (rgb.available())
     {
       io.write(0, LOW);
       delay(500);
       val = 3;
 
-      Serial.println("Red: " + String(rgb.readRed()));
-      Serial.println("Green: " + String(rgb.readGreen()));
-      Serial.println("Blue: " + String(rgb.readBlue()));
+      R = rgb.readRed();
+      G = rgb.readGreen();
+      B = rgb.readBlue();
+  
+      Serial.println("Red: " + String(R));
+      Serial.println("Green: " + String(G));
+      Serial.println("Blue: " + String(B));
       Serial.println();
       io.write(0, HIGH);
+      delay(100);
     }
+
+    delay(300);
+    rotateSlot(DROP);
+    delay(1000);
+    rotateSlot(HOPPER);
+    delay(300);
+}
+
+void loop() {
+  val = digitalRead(photoInturruptSignal);
+
+  if(val == LOW) // beam inturrupt
+  {
+    run();
+    loadCount = 2;
+  }
+  else if(loadCount > 0)
+  {
+    run();
+    loadCount--;
   }
 }
