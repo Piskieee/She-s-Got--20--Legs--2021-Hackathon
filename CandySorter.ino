@@ -22,6 +22,12 @@ int curSlidePos = BINRED;
 int loadCount = 0;
 int val;
 int R, G, B;
+int countRed = 0;
+int countOrange = 0;
+int countYellow = 0;
+int countGreen = 0;
+int countBlue = 0;
+int countBrown = 0;
 
 void rotateSlot (int target) {
   rotateMotor(slotServo, curSlotPos, target);
@@ -44,20 +50,6 @@ void rotateMotor (int servo, int starting, int target) {
     }
     delay(100);  
   }
-}
-
-void setServoPulse(uint8_t n, double pulse) {
-  double pulselength;
-  
-  pulselength = 1000000;   // 1,000,000 us per second
-  pulselength /= 60;   // 60 Hz
-  Serial.print(pulselength); Serial.println(" us per period"); 
-  pulselength /= 4096;  // 12 bits of resolution
-  Serial.print(pulselength); Serial.println(" us per bit"); 
-  pulse *= 1000;
-  pulse /= pulselength;
-  Serial.println(pulse);
-  servoController.setPWM(n, 0, pulse);
 }
 
 void setup() {
@@ -109,7 +101,7 @@ void run()
     {
       io.write(0, LOW);
       delay(500);
-      val = 3;
+
 
       R = rgb.readRed();
       G = rgb.readGreen();
@@ -125,42 +117,36 @@ void run()
 
     if(R < 8000) {
       if(B > 9500) {
-        Serial.println("Seems Blue");
-        Serial.println();
         rotateSlide(BINBLUE);
+        countBlue++;
       }
       else if(G > 20000) {
-        Serial.println("Seems Green");
-        Serial.println();
         rotateSlide(BINGREEN);
+        countGreen++;
       }
-      else { 
-        Serial.println("Seems Brown");
-        Serial.println();
+      else {
         rotateSlide(BINBROWN);
+        countBrown++;
       }
     }
     else {
       if(G > 20000) {
-        Serial.println("Seems Yellow");
-        Serial.println();
         rotateSlide(BINYELLOW);
+        countYellow++;
       }
       else if(R > 9500) {
-        Serial.println("Seems Orange");
-        Serial.println();
         rotateSlide(BINORANGE);
+        countOrange++;
       }
       else {
-        Serial.println("Seems Red");
-        Serial.println();
         rotateSlide(BINRED);
+        countRed++;
       }
     }
 
     delay(300);
     rotateSlot(DROP);
-    delay(1000);
+    delay(500);
     rotateSlot(HOPPER);
     delay(300);
 }
