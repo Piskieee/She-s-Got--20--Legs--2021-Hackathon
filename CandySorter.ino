@@ -1,3 +1,4 @@
+#include <LiquidCrystal.h>
 #include <Adafruit_PWMServoDriver.h>
 #include <SparkFun_BH1749NUC_Arduino_Library.h>
 #include <SparkFun_PCA9536_Arduino_Library.h>
@@ -7,12 +8,13 @@ Adafruit_PWMServoDriver servoController = Adafruit_PWMServoDriver();
 #define SENSOR 320
 #define DROP 440
 BH1749NUC rgb;
-PCA9536 io; 
+PCA9536 io;
+LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
 int photoInturruptSignal = 3;
 int slotServo = 0;
 int slideServo = 1;
 int curSlotPos = HOPPER;
-int curSlidePos = SERVOMIN;
+int curSlidePos = 120;
 int loadCount = 0;
 int val;
 int R, G, B;
@@ -58,6 +60,11 @@ void setup() {
   // enable debug output
   Serial.begin(115200);
   Serial.println("====Setup Initilizing====");
+
+  // initiate screen
+  lcd.begin(16, 2);
+  lcd.setCursor(0, 0);
+  lcd.print("==Init==");
   
   // candy detector
   pinMode(photoInturruptSignal, INPUT); //low is triggered
@@ -66,7 +73,7 @@ void setup() {
   servoController.begin();
   servoController.setPWMFreq(60);
   servoController.setPWM(slotServo,0,curSlotPos);
-  servoController.setPWM(slideServo,0,SERVOMIN);
+  servoController.setPWM(slideServo,0,curSlidePos);
   delay(500);
 
   // color sensor
@@ -91,6 +98,8 @@ void setup() {
     io.write(pinNum, HIGH);
   }
 
+  lcd.setCursor(0, 0);
+  lcd.print("Ready to Sort");
   Serial.println("====Candy Sorter Initialized====");
 }
 
@@ -119,30 +128,42 @@ void run()
 
     if(R < 8000) {
       if(B > 9500) {
-        Serial.println("Seems Blue");
-        Serial.println();
+        lcd.setCursor(0, 0);
+        lcd.print("Blue            ");
+        lcd.setCursor(0, 1);
+        lcd.print("");
       }
       else if(G > 20000) {
-        Serial.println("Seems Green");
-        Serial.println();
+        lcd.setCursor(0, 0);
+        lcd.print("Green           ");
+        lcd.setCursor(0, 1);
+        lcd.print("");
       }
       else { 
-        Serial.println("Seems Brown");
-        Serial.println();
+        lcd.setCursor(0, 0);
+        lcd.print("Brown           ");
+        lcd.setCursor(0, 1);
+        lcd.print("");
       }
     }
     else {
       if(G > 20000) {
-        Serial.println("Seems Yellow");
-        Serial.println();
+        lcd.setCursor(0, 0);
+        lcd.print("Yellow          ");
+        lcd.setCursor(0, 1);
+        lcd.print("");
       }
       else if(R > 9500) {
-        Serial.println("Seems Orange");
-        Serial.println();
+        lcd.setCursor(0, 0);
+        lcd.print("Orange          ");
+        lcd.setCursor(0, 1);
+        lcd.print("");
       }
       else {
-        Serial.println("Seems Red");
-        Serial.println();
+        lcd.setCursor(0, 0);
+        lcd.print("Red             ");
+        lcd.setCursor(0, 1);
+        lcd.print("");
       }
     }
 
