@@ -13,7 +13,7 @@ int slotServo = 0;
 int slideServo = 1;
 int curSlotPos = HOPPER;
 int curSlidePos = SERVOMIN;
-int loadCount = 3;
+int loadCount = 0;
 int val;
 int R, G, B;
 
@@ -65,7 +65,7 @@ void setup() {
   // servos
   servoController.begin();
   servoController.setPWMFreq(60);
-  servoController.setPWM(slotServo,0,SERVOMIN);
+  servoController.setPWM(slotServo,0,curSlotPos);
   servoController.setPWM(slideServo,0,SERVOMIN);
   delay(500);
 
@@ -115,6 +115,35 @@ void run()
       Serial.println();
       io.write(0, HIGH);
       delay(100);
+    }
+
+    if(R < 8000) {
+      if(B > 9500) {
+        Serial.println("Seems Blue");
+        Serial.println();
+      }
+      else if(G > 20000) {
+        Serial.println("Seems Green");
+        Serial.println();
+      }
+      else { 
+        Serial.println("Seems Brown");
+        Serial.println();
+      }
+    }
+    else {
+      if(G > 20000) {
+        Serial.println("Seems Yellow");
+        Serial.println();
+      }
+      else if(R > 9500) {
+        Serial.println("Seems Orange");
+        Serial.println();
+      }
+      else {
+        Serial.println("Seems Red");
+        Serial.println();
+      }
     }
 
     delay(300);
