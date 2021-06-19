@@ -3,17 +3,19 @@
 #include <SparkFun_PCA9536_Arduino_Library.h>
 
 Adafruit_PWMServoDriver servoController = Adafruit_PWMServoDriver();
-#define SERVOMIN  120
-#define SERVOMAX  720
+#define HOPPER 210
+#define SENSOR 320
+#define DROP 440
 BH1749NUC rgb;
 PCA9536 io; 
 int photoInturruptSignal = 3;
 int slotServo = 0;
 int slideServo = 1;
-int curSlotPos = SERVOMIN;
+int curSlotPos = HOPPER;
 int curSlidePos = SERVOMIN;
+int loadCount = 3;
 int val;
-int r, g, b;
+int R, G, B;
 
 void rotateSlot (int target) {
   rotateMotor(slotServo, curSlotPos, target);
@@ -65,7 +67,7 @@ void setup() {
   servoController.setPWMFreq(60);
   servoController.setPWM(slotServo,0,SERVOMIN);
   servoController.setPWM(slideServo,0,SERVOMIN);
-  delay(1000);
+  delay(500);
 
   // color sensor
   if (rgb.begin() != BH1749NUC_SUCCESS)
@@ -92,31 +94,47 @@ void setup() {
   Serial.println("====Candy Sorter Initialized====");
 }
 
-void loop() {
-  val = digitalRead(photoInturruptSignal);
-
-  if(val == LOW) // beam inturrupt
-  {
-    Serial.println("dropped");
-    delay(500);
-
-    rotateSlot(SERVOMAX);
-    rotateSlide(SERVOMAX);
-  
+void run()
+{
+    rotateSlot(SENSOR);
+    delay(300);
+        
     if (rgb.available())
     {
       io.write(0, LOW);
       delay(500);
       val = 3;
+
+      R = rgb.readRed();
+      G = rgb.readGreen();
+      B = rgb.readBlue();
   
-      Serial.println("Red: " + String(rgb.readRed()));
-      Serial.println("Green: " + String(rgb.readGreen()));
-      Serial.println("Blue: " + String(rgb.readBlue()));
+      Serial.println("Red: " + String(R));
+      Serial.println("Green: " + String(G));
+      Serial.println("Blue: " + String(B));
       Serial.println();
       io.write(0, HIGH);
+      delay(100);
     }
 
-    rotateSlot(SERVOMIN);
-    rotateSlide(SERVOMIN);
+    delay(300);
+    rotateSlot(DROP);
+    delay(1000);
+    rotateSlot(HOPPER);
+    delay(300);
+}
+
+void loop() {
+  val = digitalRead(photoInturruptSignal);
+
+  if(val == LOW) // beam inturrupt
+  {
+    run();
+    loadCount = 2;
+  }
+  else if(loadCount > 0)
+  {
+    run();
+    loadCount--;
   }
 }
