@@ -29,7 +29,7 @@ void loop() {
   {
     Serial.println("dropped");
     delay(200);
-
+/*
     for (uint16_t pulselen = SERVOMIN; pulselen < SERVOMAX; pulselen++) {
       servoController.setPWM(slotServo, 0, pulselen);
       servoController.setPWM(slideServo, 0, pulselen);
@@ -41,5 +41,8 @@ void loop() {
       servoController.setPWM(slideServo, 0, pulselen);
     }
     delay(500);
+   */
+
+   
   }
 }
