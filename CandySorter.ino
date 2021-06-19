@@ -7,6 +7,12 @@ Adafruit_PWMServoDriver servoController = Adafruit_PWMServoDriver();
 #define HOPPER 210
 #define SENSOR 320
 #define DROP 440
+#define BINRED 120
+#define BINORANGE 150
+#define BINYELLOW 180
+#define BINGREEN 210
+#define BINBLUE 240
+#define BINBROWN 270
 BH1749NUC rgb;
 PCA9536 io;
 LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
@@ -14,10 +20,16 @@ int photoInturruptSignal = 3;
 int slotServo = 0;
 int slideServo = 1;
 int curSlotPos = HOPPER;
-int curSlidePos = 120;
+int curSlidePos = BINRED;
 int loadCount = 0;
 int val;
 int R, G, B;
+int countRed = 0;
+int countOrange = 0;
+int countYellow = 0;
+int countGreen = 0;
+int countBlue = 0;
+int countBrown = 0;
 
 void rotateSlot (int target) {
   rotateMotor(slotServo, curSlotPos, target);
@@ -40,20 +52,6 @@ void rotateMotor (int servo, int starting, int target) {
     }
     delay(100);  
   }
-}
-
-void setServoPulse(uint8_t n, double pulse) {
-  double pulselength;
-  
-  pulselength = 1000000;   // 1,000,000 us per second
-  pulselength /= 60;   // 60 Hz
-  Serial.print(pulselength); Serial.println(" us per period"); 
-  pulselength /= 4096;  // 12 bits of resolution
-  Serial.print(pulselength); Serial.println(" us per bit"); 
-  pulse *= 1000;
-  pulse /= pulselength;
-  Serial.println(pulse);
-  servoController.setPWM(n, 0, pulse);
 }
 
 void setup() {
@@ -112,7 +110,7 @@ void run()
     {
       io.write(0, LOW);
       delay(500);
-      val = 3;
+
 
       R = rgb.readRed();
       G = rgb.readGreen();
@@ -128,50 +126,68 @@ void run()
 
     if(R < 8000) {
       if(B > 9500) {
+        countBlue++;
         lcd.setCursor(0, 0);
         lcd.print("Blue            ");
         lcd.setCursor(0, 1);
-        lcd.print("");
+        lcd.print(countBlue);
+        rotateSlide(BINBLUE);
       }
       else if(G > 20000) {
+        countGreen++;
         lcd.setCursor(0, 0);
         lcd.print("Green           ");
         lcd.setCursor(0, 1);
-        lcd.print("");
+        lcd.print(countGreen);
+        rotateSlide(BINGREEN);
       }
-      else { 
+      else {
+        countBrown++;
         lcd.setCursor(0, 0);
         lcd.print("Brown           ");
         lcd.setCursor(0, 1);
-        lcd.print("");
+        lcd.print(countBrown);
+        rotateSlide(BINBROWN);
       }
     }
     else {
       if(G > 20000) {
+        countYellow++;
         lcd.setCursor(0, 0);
         lcd.print("Yellow          ");
         lcd.setCursor(0, 1);
-        lcd.print("");
+        lcd.print(countYellow);
+        rotateSlide(BINYELLOW);
       }
       else if(R > 9500) {
+        countOrange++;
         lcd.setCursor(0, 0);
         lcd.print("Orange          ");
         lcd.setCursor(0, 1);
-        lcd.print("");
+        lcd.print(countOrange);
+        rotateSlide(BINORANGE);
       }
       else {
+        countRed++;
         lcd.setCursor(0, 0);
         lcd.print("Red             ");
         lcd.setCursor(0, 1);
-        lcd.print("");
+        lcd.print(countRed);
+        rotateSlide(BINRED);
       }
     }
 
     delay(300);
     rotateSlot(DROP);
-    delay(1000);
+    delay(500);
     rotateSlot(HOPPER);
     delay(300);
+
+    //clear screen
+    lcd.setCursor(0, 0);
+    lcd.print("                ");
+    lcd.setCursor(0, 1);
+    lcd.print("                ");
 }
 
 void loop() {
