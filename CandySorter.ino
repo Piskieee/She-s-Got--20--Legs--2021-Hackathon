@@ -6,19 +6,19 @@ Adafruit_PWMServoDriver servoController = Adafruit_PWMServoDriver();
 #define HOPPER 210
 #define SENSOR 320
 #define DROP 440
-#define BINRED 120
-#define BINORANGE 150
-#define BINYELLOW 180
-#define BINGREEN 210
-#define BINBLUE 240
-#define BINBROWN 270
+#define BINRED 130
+#define BINORANGE 180
+#define BINYELLOW 255
+#define BINGREEN 325
+#define BINBLUE 395
+#define BINBROWN 465
 BH1749NUC rgb;
 PCA9536 io; 
 int photoInturruptSignal = 3;
 int slotServo = 0;
 int slideServo = 1;
 int curSlotPos = HOPPER;
-int curSlidePos = BINRED;
+int curSlidePos = 290;
 int loadCount = 0;
 int val;
 int R, G, B;
