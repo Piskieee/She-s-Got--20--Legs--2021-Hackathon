@@ -6,13 +6,19 @@ Adafruit_PWMServoDriver servoController = Adafruit_PWMServoDriver();
 #define HOPPER 210
 #define SENSOR 320
 #define DROP 440
+#define BINRED 120
+#define BINORANGE 150
+#define BINYELLOW 180
+#define BINGREEN 210
+#define BINBLUE 240
+#define BINBROWN 270
 BH1749NUC rgb;
 PCA9536 io; 
 int photoInturruptSignal = 3;
 int slotServo = 0;
 int slideServo = 1;
 int curSlotPos = HOPPER;
-int curSlidePos = SERVOMIN;
+int curSlidePos = BINRED;
 int loadCount = 0;
 int val;
 int R, G, B;
@@ -66,7 +72,7 @@ void setup() {
   servoController.begin();
   servoController.setPWMFreq(60);
   servoController.setPWM(slotServo,0,curSlotPos);
-  servoController.setPWM(slideServo,0,SERVOMIN);
+  servoController.setPWM(slideServo,0,curSlidePos);
   delay(500);
 
   // color sensor
@@ -121,28 +127,34 @@ void run()
       if(B > 9500) {
         Serial.println("Seems Blue");
         Serial.println();
+        rotateSlide(BINBLUE);
       }
       else if(G > 20000) {
         Serial.println("Seems Green");
         Serial.println();
+        rotateSlide(BINGREEN);
       }
       else { 
         Serial.println("Seems Brown");
         Serial.println();
+        rotateSlide(BINBROWN);
       }
     }
     else {
       if(G > 20000) {
         Serial.println("Seems Yellow");
         Serial.println();
+        rotateSlide(BINYELLOW);
       }
       else if(R > 9500) {
         Serial.println("Seems Orange");
         Serial.println();
+        rotateSlide(BINORANGE);
       }
       else {
         Serial.println("Seems Red");
         Serial.println();
+        rotateSlide(BINRED);
       }
     }
 
