@@ -76,21 +76,12 @@ void loop() {
       io.write(0, LOW);
       delay(500);
       val = 3;
-      r = g = b = 0;
-      
-      for(uint16_t multiCount = 0;multiCount < val; multiCount++)
-      {
-        r += rgb.colors.red;
-        g += rgb.colors.green;
-        b += rgb.colors.blue;
-        delay(250);
-      }
-      io.write(0, HIGH);
 
-      Serial.println("Red: " + String(r/val));
-      Serial.println("Green: " + String(g/val));
-      Serial.println("Blue: " + String(b/val));
-      Serial.println();      
+      Serial.println("Red: " + String(rgb.readRed()));
+      Serial.println("Green: " + String(rgb.readGreen()));
+      Serial.println("Blue: " + String(rgb.readBlue()));
+      Serial.println();
+      io.write(0, HIGH);
     }
   }
 }
