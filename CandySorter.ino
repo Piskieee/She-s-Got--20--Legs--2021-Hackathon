@@ -102,6 +102,7 @@ void setup() {
 
 void run()
 {
+  /*
     rotateSlot(SENSOR);
     delay(300);
         
@@ -163,6 +164,23 @@ void run()
     delay(1000);
     rotateSlot(HOPPER);
     delay(300);
+    */
+    
+    rotateSlide(BINRED);
+    delay(400);
+    rotateSlide(BINORANGE);
+    delay(400);
+    rotateSlide(BINYELLOW);
+    delay(400);
+    rotateSlide(BINGREEN);
+    delay(400);
+    rotateSlide(BINBLUE);
+    delay(400);
+    rotateSlide(BINBROWN);
+    delay(400);
+    rotateSlide(BINRED);
+    delay(400);
+    
 }
 
 void loop() {
