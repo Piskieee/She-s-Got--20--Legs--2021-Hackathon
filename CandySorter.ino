@@ -151,7 +151,7 @@ void run()
       }
     }
     else {
-      if(G > 20000) {
+      if(G > 22500) {
         countYellow++;
         lcd.setCursor(0, 0);
         lcd.print("Yellow          ");
