@@ -56,8 +56,8 @@ void rotateMotor (int servo, int starting, int target) {
 
 void setup() {
   // enable debug output
-  Serial.begin(115200);
-  Serial.println("====Setup Initilizing====");
+  Serial.begin(9600);
+  //Serial.println("====Setup Initilizing====");
 
   // initiate screen
   lcd.begin(16, 2);
@@ -98,7 +98,22 @@ void setup() {
 
   lcd.setCursor(0, 0);
   lcd.print("Ready to Sort");
-  Serial.println("====Candy Sorter Initialized====");
+  //Serial.println("====Candy Sorter Initialized====");
+}
+
+void printCountsToSerial()
+{
+  Serial.print(countRed);
+  Serial.print(" ");
+  Serial.print(countOrange);
+  Serial.print(" ");
+  Serial.print(countYellow);
+  Serial.print(" ");
+  Serial.print(countGreen);
+  Serial.print(" ");
+  Serial.print(countBlue);
+  Serial.print(" ");
+  Serial.println(countBrown);
 }
 
 void run()
@@ -183,11 +198,12 @@ void run()
     rotateSlot(HOPPER);
     delay(300);
 
-    //clear screen
     lcd.setCursor(0, 0);
     lcd.print("Total           ");
     lcd.setCursor(0, 1);
     lcd.print(countRed+countOrange+countYellow+countGreen+countBlue+countBrown);
+
+    printCountsToSerial();
 }
 
 void loop() {
