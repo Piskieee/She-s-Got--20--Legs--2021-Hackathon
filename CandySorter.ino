@@ -119,24 +119,25 @@ void printCountsToSerial()
 void run()
 {
     rotateSlot(SENSOR);
-    delay(300);
+    delay(100);
         
     if (rgb.available())
     {
       io.write(0, LOW);
-      delay(500);
+      delay(250);
 
 
       R = rgb.readRed();
       G = rgb.readGreen();
       B = rgb.readBlue();
-  
+  /*
       Serial.println("Red: " + String(R));
       Serial.println("Green: " + String(G));
       Serial.println("Blue: " + String(B));
       Serial.println();
+      */
       io.write(0, HIGH);
-      delay(100);
+//      delay(100);
     }
 
     if(R < 8000) {
@@ -192,11 +193,11 @@ void run()
       }
     }
 
-    delay(300);
+    delay(200);
     rotateSlot(DROP);
-    delay(500);
+    delay(200);
     rotateSlot(HOPPER);
-    delay(300);
+    delay(200);
 
     lcd.setCursor(0, 0);
     lcd.print("Total           ");
@@ -211,6 +212,7 @@ void loop() {
 
   if(val == LOW) // beam inturrupt
   {
+    delay(300);
     run();
     loadCount = 2;
   }
