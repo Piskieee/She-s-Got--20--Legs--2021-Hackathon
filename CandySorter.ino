@@ -146,7 +146,9 @@ void run()
         lcd.setCursor(0, 0);
         lcd.print("Blue            ");
         lcd.setCursor(0, 1);
-        lcd.print(countBlue);
+        lcd.print("                ");
+        lcd.setCursor(0, 1);
+        lcd.print(String(countBlue));
         rotateSlide(BINBLUE);
       }
       else if(G > 20000) {
@@ -154,7 +156,9 @@ void run()
         lcd.setCursor(0, 0);
         lcd.print("Green           ");
         lcd.setCursor(0, 1);
-        lcd.print(countGreen);
+        lcd.print("                ");
+        lcd.setCursor(0, 1);
+        lcd.print(String(countGreen));
         rotateSlide(BINGREEN);
       }
       else {
@@ -162,7 +166,9 @@ void run()
         lcd.setCursor(0, 0);
         lcd.print("Brown           ");
         lcd.setCursor(0, 1);
-        lcd.print(countBrown);
+        lcd.print("                ");
+        lcd.setCursor(0, 1);
+        lcd.print(String(countBrown));
         rotateSlide(BINBROWN);
       }
     }
@@ -172,7 +178,9 @@ void run()
         lcd.setCursor(0, 0);
         lcd.print("Yellow          ");
         lcd.setCursor(0, 1);
-        lcd.print(countYellow);
+        lcd.print("                ");
+        lcd.setCursor(0, 1);
+        lcd.print(String(countYellow));
         rotateSlide(BINYELLOW);
       }
       else if(R > 9500) {
@@ -180,7 +188,9 @@ void run()
         lcd.setCursor(0, 0);
         lcd.print("Orange          ");
         lcd.setCursor(0, 1);
-        lcd.print(countOrange);
+        lcd.print("                ");
+        lcd.setCursor(0, 1);
+        lcd.print(String(countOrange));
         rotateSlide(BINORANGE);
       }
       else {
@@ -188,7 +198,9 @@ void run()
         lcd.setCursor(0, 0);
         lcd.print("Red             ");
         lcd.setCursor(0, 1);
-        lcd.print(countRed);
+        lcd.print("                ");
+        lcd.setCursor(0, 1);
+        lcd.print(String(countRed));
         rotateSlide(BINRED);
       }
     }
@@ -201,6 +213,8 @@ void run()
 
     lcd.setCursor(0, 0);
     lcd.print("Total           ");
+    lcd.setCursor(0, 1);
+    lcd.print("                ");
     lcd.setCursor(0, 1);
     lcd.print(countRed+countOrange+countYellow+countGreen+countBlue+countBrown);
 
