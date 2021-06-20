@@ -13,10 +13,13 @@ Adafruit_PWMServoDriver servoController = Adafruit_PWMServoDriver();
 #define BINGREEN 325
 #define BINBLUE 395
 #define BINBROWN 465
+#define BLUE 3
+#define GREEN 5
+#define RED 6
 BH1749NUC rgb;
 PCA9536 io;
 LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
-int photoInturruptSignal = 3;
+int photoInturruptSignal = 4;
 int slotServo = 0;
 int slideServo = 1;
 int curSlotPos = HOPPER;
@@ -99,6 +102,14 @@ void setup() {
   lcd.setCursor(0, 0);
   lcd.print("Ready to Sort");
   //Serial.println("====Candy Sorter Initialized====");
+
+  //RGB LED
+  pinMode(RED, OUTPUT);
+  pinMode(GREEN, OUTPUT);
+  pinMode(BLUE, OUTPUT);
+  analogWrite(RED, 0);
+  analogWrite(GREEN, 0);
+  analogWrite(BLUE, 0);
 }
 
 void printCountsToSerial()
@@ -114,6 +125,30 @@ void printCountsToSerial()
   Serial.print(countBlue);
   Serial.print(" ");
   Serial.println(countBrown);
+}
+
+void rgbOn(int redValue, int greenValue, int blueValue) {
+  /*if(redValue > 0) {
+    digitalWrite(RED, HIGH);
+  }
+  if(blueValue > 0) {
+    digitalWrite(BLUE, HIGH);
+  }
+  if(greenValue > 0) {
+    digitalWrite(GREEN, HIGH);
+  }*/
+  analogWrite(RED, redValue);
+  analogWrite(BLUE, blueValue);
+  analogWrite(GREEN, greenValue);
+}
+
+void rgbOff() {
+  analogWrite(RED, 0);
+  analogWrite(BLUE, 0);
+  analogWrite(GREEN, 0);
+  //digitalWrite(RED, LOW);
+  //digitalWrite(GREEN, LOW);
+  //digitalWrite(BLUE, LOW);
 }
 
 void run()
@@ -143,6 +178,7 @@ void run()
     if(R < 8000) {
       if(B > 9500) {
         countBlue++;
+        rgbOn(0,0,255);
         lcd.setCursor(0, 0);
         lcd.print("Blue            ");
         lcd.setCursor(0, 1);
@@ -153,6 +189,7 @@ void run()
       }
       else if(G > 20000) {
         countGreen++;
+        rgbOn(0,255,0);
         lcd.setCursor(0, 0);
         lcd.print("Green           ");
         lcd.setCursor(0, 1);
@@ -163,6 +200,7 @@ void run()
       }
       else {
         countBrown++;
+        rgbOn(165,42,42);
         lcd.setCursor(0, 0);
         lcd.print("Brown           ");
         lcd.setCursor(0, 1);
@@ -175,6 +213,7 @@ void run()
     else {
       if(G > 22500) {
         countYellow++;
+        rgbOn(255,165,0);
         lcd.setCursor(0, 0);
         lcd.print("Yellow          ");
         lcd.setCursor(0, 1);
@@ -185,6 +224,7 @@ void run()
       }
       else if(R > 9500) {
         countOrange++;
+        rgbOn(255,50,0);
         lcd.setCursor(0, 0);
         lcd.print("Orange          ");
         lcd.setCursor(0, 1);
@@ -195,6 +235,7 @@ void run()
       }
       else {
         countRed++;
+        rgbOn(255,0,0);
         lcd.setCursor(0, 0);
         lcd.print("Red             ");
         lcd.setCursor(0, 1);
@@ -211,6 +252,7 @@ void run()
     rotateSlot(HOPPER);
     delay(200);
 
+    rgbOff();
     lcd.setCursor(0, 0);
     lcd.print("Total           ");
     lcd.setCursor(0, 1);
