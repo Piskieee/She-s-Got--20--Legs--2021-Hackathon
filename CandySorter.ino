@@ -1,3 +1,4 @@
+#include <LiquidCrystal.h>
 #include <Adafruit_PWMServoDriver.h>
 #include <SparkFun_BH1749NUC_Arduino_Library.h>
 #include <SparkFun_PCA9536_Arduino_Library.h>
@@ -6,16 +7,29 @@ Adafruit_PWMServoDriver servoController = Adafruit_PWMServoDriver();
 #define HOPPER 210
 #define SENSOR 320
 #define DROP 440
+#define BINRED 130
+#define BINORANGE 180
+#define BINYELLOW 255
+#define BINGREEN 325
+#define BINBLUE 395
+#define BINBROWN 465
 BH1749NUC rgb;
-PCA9536 io; 
+PCA9536 io;
+LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
 int photoInturruptSignal = 3;
 int slotServo = 0;
 int slideServo = 1;
 int curSlotPos = HOPPER;
-int curSlidePos = SERVOMIN;
+int curSlidePos = 290;
 int loadCount = 0;
 int val;
 int R, G, B;
+int countRed = 0;
+int countOrange = 0;
+int countYellow = 0;
+int countGreen = 0;
+int countBlue = 0;
+int countBrown = 0;
 
 void rotateSlot (int target) {
   rotateMotor(slotServo, curSlotPos, target);
@@ -40,24 +54,15 @@ void rotateMotor (int servo, int starting, int target) {
   }
 }
 
-void setServoPulse(uint8_t n, double pulse) {
-  double pulselength;
-  
-  pulselength = 1000000;   // 1,000,000 us per second
-  pulselength /= 60;   // 60 Hz
-  Serial.print(pulselength); Serial.println(" us per period"); 
-  pulselength /= 4096;  // 12 bits of resolution
-  Serial.print(pulselength); Serial.println(" us per bit"); 
-  pulse *= 1000;
-  pulse /= pulselength;
-  Serial.println(pulse);
-  servoController.setPWM(n, 0, pulse);
-}
-
 void setup() {
   // enable debug output
   Serial.begin(115200);
   Serial.println("====Setup Initilizing====");
+
+  // initiate screen
+  lcd.begin(16, 2);
+  lcd.setCursor(0, 0);
+  lcd.print("==Init==");
   
   // candy detector
   pinMode(photoInturruptSignal, INPUT); //low is triggered
@@ -66,7 +71,7 @@ void setup() {
   servoController.begin();
   servoController.setPWMFreq(60);
   servoController.setPWM(slotServo,0,curSlotPos);
-  servoController.setPWM(slideServo,0,SERVOMIN);
+  servoController.setPWM(slideServo,0,curSlidePos);
   delay(500);
 
   // color sensor
@@ -91,6 +96,8 @@ void setup() {
     io.write(pinNum, HIGH);
   }
 
+  lcd.setCursor(0, 0);
+  lcd.print("Ready to Sort");
   Serial.println("====Candy Sorter Initialized====");
 }
 
@@ -103,7 +110,7 @@ void run()
     {
       io.write(0, LOW);
       delay(500);
-      val = 3;
+
 
       R = rgb.readRed();
       G = rgb.readGreen();
@@ -119,38 +126,68 @@ void run()
 
     if(R < 8000) {
       if(B > 9500) {
-        Serial.println("Seems Blue");
-        Serial.println();
+        countBlue++;
+        lcd.setCursor(0, 0);
+        lcd.print("Blue            ");
+        lcd.setCursor(0, 1);
+        lcd.print(countBlue);
+        rotateSlide(BINBLUE);
       }
       else if(G > 20000) {
-        Serial.println("Seems Green");
-        Serial.println();
+        countGreen++;
+        lcd.setCursor(0, 0);
+        lcd.print("Green           ");
+        lcd.setCursor(0, 1);
+        lcd.print(countGreen);
+        rotateSlide(BINGREEN);
       }
-      else { 
-        Serial.println("Seems Brown");
-        Serial.println();
+      else {
+        countBrown++;
+        lcd.setCursor(0, 0);
+        lcd.print("Brown           ");
+        lcd.setCursor(0, 1);
+        lcd.print(countBrown);
+        rotateSlide(BINBROWN);
       }
     }
     else {
-      if(G > 20000) {
-        Serial.println("Seems Yellow");
-        Serial.println();
+      if(G > 22500) {
+        countYellow++;
+        lcd.setCursor(0, 0);
+        lcd.print("Yellow          ");
+        lcd.setCursor(0, 1);
+        lcd.print(countYellow);
+        rotateSlide(BINYELLOW);
       }
       else if(R > 9500) {
-        Serial.println("Seems Orange");
-        Serial.println();
+        countOrange++;
+        lcd.setCursor(0, 0);
+        lcd.print("Orange          ");
+        lcd.setCursor(0, 1);
+        lcd.print(countOrange);
+        rotateSlide(BINORANGE);
       }
       else {
-        Serial.println("Seems Red");
-        Serial.println();
+        countRed++;
+        lcd.setCursor(0, 0);
+        lcd.print("Red             ");
+        lcd.setCursor(0, 1);
+        lcd.print(countRed);
+        rotateSlide(BINRED);
       }
     }
 
     delay(300);
     rotateSlot(DROP);
-    delay(1000);
+    delay(500);
     rotateSlot(HOPPER);
     delay(300);
+
+    //clear screen
+    lcd.setCursor(0, 0);
+    lcd.print("Total           ");
+    lcd.setCursor(0, 1);
+    lcd.print(countRed+countOrange+countYellow+countGreen+countBlue+countBrown);
 }
 
 void loop() {
