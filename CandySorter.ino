@@ -185,9 +185,9 @@ void run()
 
     //clear screen
     lcd.setCursor(0, 0);
-    lcd.print("                ");
+    lcd.print("Total           ");
     lcd.setCursor(0, 1);
-    lcd.print("                ");
+    lcd.print(countRed+countOrange+countYellow+countGreen+countBlue+countBrown);
 }
 
 void loop() {
